@@ -1,0 +1,41 @@
+QUERIES:
+
+-- 1. Find all movies released after 2000 with an average user rating of 4 or higher.
+SELECT m.title, AVG(r.rating) AS avg_rating
+FROM movies m
+JOIN user_ratings r ON m.movie_id = r.movie_id
+WHERE m.release_year > 2000
+GROUP BY m.movie_id
+HAVING avg_rating >= 4;
+
+-- 2. List all actors who have acted in more than one movie.
+SELECT a.name, COUNT(ma.movie_id) AS movie_count
+FROM actors a
+JOIN movie_actors ma ON a.actor_id = ma.actor_id
+GROUP BY a.actor_id
+HAVING movie_count > 1;
+
+-- 3. Find the top 3 directors with the highest average movie ratings.
+SELECT d.name, AVG(r.rating) AS avg_rating
+FROM directors d
+JOIN movies m ON d.director_id = m.director_id
+JOIN user_ratings r ON m.movie_id = r.movie_id
+GROUP BY d.director_id
+ORDER BY avg_rating DESC
+LIMIT 3;
+
+-- 4. Get the genre with the most movies.
+SELECT g.genre_name, COUNT(mg.movie_id) AS movie_count
+FROM genres g
+JOIN movie_genres mg ON g.genre_id = mg.genre_id
+GROUP BY g.genre_id
+ORDER BY movie_count DESC
+LIMIT 1;
+
+-- 5. Find movies with multiple genres and list their titles and genres.
+SELECT m.title, GROUP_CONCAT(g.genre_name) AS genres
+FROM movies m
+JOIN movie_genres mg ON m.movie_id = mg.movie_id
+JOIN genres g ON mg.genre_id = g.genre_id
+GROUP BY m.movie_id
+HAVING COUNT(g.genre_id) > 1;
